@@ -30,3 +30,18 @@
 *.exe
 *.out
 *.app
+
+###########################
+# Directories to ignore
+ext/*
+build/*
+.vscode/*
+*.vscode/*
+*.vscode/
+*/.DS_Store
+*.DS_Store*
+
+# Extra files
+*.csv
+*.mp4
+*.ipynb
