@@ -18,7 +18,7 @@ option(MUJOCO_BUILD_TESTS "Build tests for MuJoCo" OFF)
 option(MUJOCO_TEST_PYTHON_UTIL "Build and test utility libraries for Python bindings" ON)
 add_subdirectory(${PROJECT_SOURCE_DIR}/ext/mujoco)                             # Add subdirectory
 add_subdirectory(${PROJECT_SOURCE_DIR}/ext/yaml-cpp)
-list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/libraries/mujoco/sample/cmake") # CMake Path append
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/ext/mujoco/sample/cmake") # CMake Path append
 #################################
 # Open Libraries ENDS here
 #################################
@@ -34,6 +34,7 @@ else()
   message(STATUS "[Eigen3] Cannot find a package.")
   message(STATUS "[pinocchio] Cannot find a package.")
 endif()
+add_definitions(-DCMAKE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
 
 
 # Set Compiler flags & options
@@ -63,6 +64,9 @@ include_directories(
 
 
 # Add source files
+set(KinDynSRC
+    ${CMAKE_SOURCE_DIR}/src/Robot/robot.cpp
+)
 set(WBC_SRC
     ${CMAKE_SOURCE_DIR}/src/WBC/wbc_base.cpp
     ${CMAKE_SOURCE_DIR}/src/WBC/weighted_wbc.cpp
@@ -73,6 +77,7 @@ set(WBC_SRC
 add_executable(bruce_controller
     src/main.cpp
     src/bruce_controller.cpp
+    ${KinDynSRC}
     ${WBC_SRC}
 )
 # Set include directories
@@ -89,6 +94,7 @@ target_link_libraries(bruce_controller PRIVATE
     Threads::Threads
     pinocchio::pinocchio
 )
+target_compile_options(bruce_controller PUBLIC ${MUJOCO_SIMULATE_COMPILE_OPTIONS})
 
 ############################
 ######## Unit tests ########
@@ -100,6 +106,7 @@ if(BUILD_TESTING)
     add_executable(tests 
         tests/test_main.cpp
         tests/test_pino.cpp
+        ${KinDynSRC}
         ${WBC_SRC}
     )
     target_link_libraries(tests 
