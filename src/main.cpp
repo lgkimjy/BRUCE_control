@@ -17,6 +17,32 @@
 namespace {
 //---------------------------------------- plugin handling -----------------------------------------
 
+void push_back_and_manage(std::deque<mjtNum*>& traj, const mjtNum* source, int history, int array_size) 
+{
+    mjtNum* new_array = new mjtNum[array_size];
+    std::copy(source, source + array_size, new_array);
+
+    if (traj.size() < history) {
+        traj.push_back(new_array);
+    } else if (traj.size() == history) {
+        traj.push_back(new_array);
+        delete[] traj.front(); // Free memory of the oldest element
+        traj.pop_front();
+    }
+}
+
+void visualize_state_planner(mj::Simulate& sim)
+{
+  for(int i = 0; i < 3; ++i)
+  {
+    sim.com[i] = bruce_controller.bruce.p_CoM_(i);
+    sim.lfoot[i] = bruce_controller.p_EE[0](i);
+    sim.rfoot[i] = bruce_controller.p_EE[1](i);
+  }
+  push_back_and_manage(sim.com_traj, sim.com, sim.history, 3);
+}
+
+
 // return the path to the directory containing the current executable
 // used to determine the location of auto-loaded plugin libraries
 std::string getExecutableDir() {
@@ -331,6 +357,7 @@ void PhysicsLoop(mj::Simulate& sim) {
 
             ////////////////// USER CODE : START //////////////////
             bruce_controller.control(m, d);
+            visualize_state_planner(sim);
             /////////////////// USER CODE : END ///////////////////
 
             // run single step, let next iteration deal with timing
@@ -357,6 +384,7 @@ void PhysicsLoop(mj::Simulate& sim) {
 
               ////////////////// USER CODE : START //////////////////
               bruce_controller.control(m, d);
+              visualize_state_planner(sim);
               /////////////////// USER CODE : END ///////////////////
 
               // call mj_step

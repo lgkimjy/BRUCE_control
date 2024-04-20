@@ -18,6 +18,9 @@ option(MUJOCO_BUILD_TESTS "Build tests for MuJoCo" OFF)
 option(MUJOCO_TEST_PYTHON_UTIL "Build and test utility libraries for Python bindings" ON)
 add_subdirectory(${PROJECT_SOURCE_DIR}/ext/mujoco)                             # Add subdirectory
 add_subdirectory(${PROJECT_SOURCE_DIR}/ext/yaml-cpp)
+option(QPOASES_BUILD_EXAMPLES "Build examples." OFF)
+option(BUILD_SHARED_LIBS "If ON, build shared library instead of static" OFF)
+add_subdirectory(${PROJECT_SOURCE_DIR}/ext/qpOASES)
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/ext/mujoco/sample/cmake") # CMake Path append
 #################################
 # Open Libraries ENDS here
@@ -58,6 +61,7 @@ include_directories(
     include
     INCLUDE_DIRS include
     LIBRARIES ${PROJECT_NAME}
+    ${PROJECT_SOURCE_DIR}/ext/qpoases/include
     ${EIGEN3_INCLUDE_DIR}
     DEPENDS system_lib
 )
@@ -93,6 +97,7 @@ target_link_libraries(bruce_controller PRIVATE
     glfw
     Threads::Threads
     pinocchio::pinocchio
+    qpOASES
 )
 target_compile_options(bruce_controller PUBLIC ${MUJOCO_SIMULATE_COMPILE_OPTIONS})
 
