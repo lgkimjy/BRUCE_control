@@ -38,6 +38,10 @@ void visualize_state_planner(mj::Simulate& sim)
     sim.com[i] = bruce_controller.bruce.p_CoM_(i);
     sim.lfoot[i] = bruce_controller.p_EE[0](i);
     sim.rfoot[i] = bruce_controller.p_EE[1](i);
+    sim.ltoe[i] = bruce_controller.p_contact[0](i);
+    sim.lheel[i] = bruce_controller.p_contact[1](i);
+    sim.rtoe[i] = bruce_controller.p_contact[2](i);
+    sim.rheel[i] = bruce_controller.p_contact[3](i);
   }
   push_back_and_manage(sim.com_traj, sim.com, sim.history, 3);
 }

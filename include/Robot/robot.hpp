@@ -15,8 +15,9 @@
 #include <pinocchio/multibody/model.hpp>
 #include <pinocchio/algorithm/kinematics.hpp>
 #include <pinocchio/algorithm/joint-configuration.hpp>
-#include <pinocchio/algorithm/center-of-mass.hpp>
 #include <pinocchio/algorithm/compute-all-terms.hpp>
+#include <pinocchio/algorithm/center-of-mass.hpp>
+#include <pinocchio/algorithm/center-of-mass-derivatives.hpp>
 #include <pinocchio/algorithm/jacobian.hpp>
 #include <pinocchio/algorithm/frames.hpp>
 #include <pinocchio/algorithm/centroidal.hpp>
@@ -38,10 +39,10 @@ public:
     double                      nq_;
     double                      gravity_;
     std::vector<std::string>    jnames_;
+    double                      mass_;
 
     Eigen::Matrix<double, TOTAL_DOF, 1>         qpos_, qvel_, qacc_; // Joint position, velocity, acceleration
     Eigen::Matrix<double, ACTIVE_DOF, 1>        torq_;         // Joint torque
-    double                                      mass;
     
     Eigen::Vector3d                             p_CoM_;
     Eigen::Vector3d                             pdot_CoM_;

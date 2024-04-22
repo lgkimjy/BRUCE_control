@@ -1,7 +1,7 @@
 <mujoco model="bruce_op">
     <compiler angle="radian" meshdir="meshes" autolimits="false" inertiafromgeom="false"/>
 	
-    <option timestep="0.001" gravity="0 0 -9.81" tolerance="1e-08" cone="elliptic" jacobian="dense" solver="Newton"  noslip_iterations="10" integrator="Euler" iterations="30" impratio="10.0"/> 
+    <option timestep="0.001" gravity="0 0 -9.81" tolerance="1e-05" cone="elliptic" jacobian="dense" solver="Newton"  noslip_iterations="10" integrator="Euler" iterations="30" impratio="10.0"/> 
     <option>
       <flag override="enable" gravity="enable"/>
     </option>
@@ -36,6 +36,24 @@
       <!-- <joint limited="false" damping="0.5" armature="0.1" stiffness="0" frictionloss="0.2"/> -->
       <motor gear="1 0 0 0 0 0" ctrllimited="false" ctrlrange="-100 100"/>
     </default>
+
+    <!-- Ref:https://github.com/google-deepmind/mujoco_menagerie/blob/main/robotis_op3/op3.xml -->
+    <!-- <default>
+      <mesh scale="0.001 0.001 0.001"/>
+      <geom type="mesh" solref=".004 1"/>
+      <joint damping="1.084" armature="0.045" frictionloss="0.03"/>
+      <site group="5" type="sphere"/>
+      <position kp="21.1" ctrlrange="-3.141592 3.141592" forcerange="-5 5"/>
+      <default class="collision">
+        <geom group="3"/>
+        <default class="foot">
+          <geom mass="0" type="box"/>
+        </default>
+      </default>
+      <default class="visual">
+        <geom material="black" contype="0" conaffinity="0" group="2"/>
+      </default>
+    </default> -->
 
     <visual>
       <global fovy="45" linewidth="2" glow="0.3"/>
@@ -77,6 +95,7 @@
                         <inertial pos="0.0123398 0.00253004 -0.00030441" quat="0.455603 0.546571 -0.442281 0.545962" mass="0.0274829" diaginertia="2.60237e-05 2.09939e-05 5.69233e-06"/>
                         <joint name="ankle_pitch_l" pos="0 0 0" axis="0 0 1" limited="true" range="-1.57075 1.57075"/>
                         <geom type="mesh" rgba="0.792157 0.819608 0.933333 1" mesh="ankle_pitch_link_l"/>
+        								<site name="lfoot_sensor" type="sphere" pos="0 0 0" size="0.005" rgba="1 0 0 1"/>
                       </body>
                     </body>
                   </body>
@@ -104,6 +123,7 @@
                         <inertial pos="0.0120775 0.0019746 0.00029511" quat="0.443128 0.545146 -0.456612 0.545855" mass="0.0276265" diaginertia="2.58838e-05 2.09859e-05 5.64035e-06"/>
                         <joint name="ankle_pitch_r" pos="0 0 0" axis="0 0 1" limited="true" range="-1.57075 1.57075"/>
                         <geom type="mesh" rgba="0.792157 0.819608 0.933333 1" mesh="ankle_pitch_link_r"/>
+        								<site name="rfoot_sensor" type="sphere" pos="0 0 0" size="0.005" rgba="1 0 0 1"/>
                       </body>
                     </body>
                   </body>

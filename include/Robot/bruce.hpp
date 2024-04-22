@@ -11,3 +11,5 @@ constexpr int DOF_BASEBODY_QUAT = 7;               		//	Floating-base Body DoF w
 
 constexpr int TOTAL_DOF = (DOF_BASEBODY + ACTIVE_DOF);	//	= mjModel->nv
 constexpr int TOTAL_DOF_QUAT = (TOTAL_DOF + 1);			//	Orientation is quaternion
+
+constexpr int NO_OF_EE = 2;	                            //	Number of end-effectors

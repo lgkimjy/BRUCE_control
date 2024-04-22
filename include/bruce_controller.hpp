@@ -36,6 +36,7 @@ public:
     double sim_time;
     int    tmp = 0;
     unsigned count_sim;
+    unsigned count_ctrl;
 
 	Eigen::Matrix<double, ACTIVE_DOF, 1>	        joint_torq;					       //	Active joint torque
 	Eigen::Matrix<double, ACTIVE_DOF, 1>	        torq_ff;					       //	Active joint torque
@@ -47,17 +48,27 @@ public:
 	Eigen::Matrix<double, ACTIVE_DOF, ACTIVE_DOF> 	Kp_qcmd, Kd_qcmd;			//	Joint gain matrices for active joint
 	Eigen::Matrix<double, ACTIVE_DOF, ACTIVE_DOF> 	Kp_swing, Kd_swing;			//	Joint gain matrices for active joint
 
-
     // End-effector related variables
     std::vector<std::string>	                            EEnames;    //	End-effector names
 	std::vector<Eigen::Vector3d>	                        p_EE;       //	Position vector of i-th end-effector
 	std::vector<Eigen::Matrix3d>	                        R_EE;       //	Position vector of i-th end-effector
+	std::vector<Eigen::Matrix4d>	                        T_EE;       //	Position vector of i-th end-effector
     std::vector<Eigen::Vector3d>	                        pdot_EE;    //	Linear velocity of i-th end-effector
     std::vector<Eigen::Vector3d>	                        omega_EE;   //	Angular velocity of i-th end-effector
     std::vector<Eigen::Matrix<double, DOF3, TOTAL_DOF>>	    Jp_EE;	    //	i-th End-effector linear Jacobian
     std::vector<Eigen::Matrix<double, DOF3, TOTAL_DOF>>	    Jr_EE;	    //	i-th End-effector angular Jacobian
     std::vector<Eigen::Matrix<double, DOF3, TOTAL_DOF>>	    Jdotp_EE;	//	Time derivative of Jp_EE
     std::vector<Eigen::Matrix<double, DOF3, TOTAL_DOF>>	    Jdotr_EE;	//	Time derivative of Jr_EE
+
+    // Contact related variables
+    std::vector<Eigen::Vector4d>                            offset;
+    std::vector<Eigen::Vector3d>                            p_contact;	    //	Position vector of i-th contact point
+    std::vector<Eigen::Matrix3d>                            R_contact;	    //	Position vector of i-th contact point
+    std::vector<Eigen::Vector3d>                            pdot_contact;	//	Position vector of i-th contact point
+    std::vector<Eigen::Matrix<double, DOF3, TOTAL_DOF>>	    Jp_contact;	    //  i-th Contact point linear Jacobian
+    std::vector<Eigen::Matrix<double, DOF3, TOTAL_DOF>>	    Jr_contact;	    //  i-th Contact point angular Jacobian
+    std::vector<Eigen::Matrix<double, DOF3, TOTAL_DOF>>	    Jdotp_contact;	//	Time derivative of Jp_contact
+    std::vector<Eigen::Matrix<double, DOF3, TOTAL_DOF>>	    Jdotr_contact;	//	Time derivative of Jr_contact
 
 	CP2P_Traj<ACTIVE_DOF, sysReal> 			Joint_Traj;
 
@@ -69,12 +80,16 @@ public:
     void readConfig();
     void control(mjModel* model, mjData* data);
     void getMuJoCoFeedback(mjData* data);
+    void computeEEKinematics();
+    void computeContactKinematics();
+    
     void JointPlanner();
     void JointPlanner2();
-    void computeEEKinematics();
-    void updateControlAlgorithm();
-    
     void computeCoMPosTask();
     void computeBaseOrientationTask();
+    void updateControlAlgorithm();
+    
     void computeJointLevelController(controllerTypeDef ctrlType);
+
+    void compareModelComputation(const mjModel* uModel, mjData* uData, const int& count);
 };

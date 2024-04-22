@@ -69,21 +69,31 @@ void Robot::computeDynamics()
     pinocchio::nonLinearEffects(model_, data_, xi_quat_, xidot_);
     pinocchio::computeCoriolisMatrix(model_, data_, xi_quat_, xidot_);
     pinocchio::computeJointJacobiansTimeVariation(model_, data_, xi_quat_, xidot_);
-    pinocchio::computeGeneralizedGravity(model_, data_, xi_quat_);
     pinocchio::rnea(model_, data_, xi_quat_, xidot_, xiddot_);
+    pinocchio::computeGeneralizedGravity(model_, data_, xi_quat_);
     // pinocchio::computeCentroidalDynamics(model_, data_, xi_quat_, xidot_);
 
+    mass_ = computeTotalMass(model_);
+    // mass_ = data_.mass[0];                  // total mass
+    
     // compute Centroidal Dynamics
 
 }
 
+
+// Ref: https://github.com/stack-of-tasks/pinocchio/issues/1455
+// Ref: https://github.com/stack-of-tasks/pinocchio/blob/master/unittest/com.cpp
+// How can I get CoM and EndEffector Jacobians using pinocchio API...
 void Robot::computeCoMMotion()
 {
-    pinocchio::centerOfMass(model_, data_, xi_quat_);
-    pinocchio::jacobianCenterOfMass(model_, data_, xi_quat_);
-    p_CoM_ = data_.com[0];
-    J_CoM_ = data_.Jcom;
-    pddot_CoM_ = J_CoM_ * xidot_;
+    p_CoM_ = pinocchio::centerOfMass(model_, data_, xi_quat_);
+    J_CoM_ = pinocchio::jacobianCenterOfMass(model_, data_, xi_quat_);      // same result as pinocchio::getJacobianComFromCrba(model_, data_);
+
+    // p_CoM_ = data_.com[0];
+    // J_CoM_ = data_.Jcom;
+
+    // pdot_CoM_ = J_CoM_ * xidot_;
+    // std::cout << "ERR" << (data_.vcom[0] - pdot_CoM_).transpose() << std::endl;
 }
 
 // Ref: https://github.com/stack-of-tasks/pinocchio/blob/master/examples/inverse-dynamics.cpp

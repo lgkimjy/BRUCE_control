@@ -1,9 +1,15 @@
-end_effector: ["ankle_pitch_link_l", "ankle_pitch_link_r"]
-
 initial_joint_pos: [0.0, 0.0, 27.0, -54.0, 25.0, 
                     0.0, 0.0, 27.0, -54.0, 25.0, 
                     21.0, -70.0, -42.0, 
                     -21.0, 70.0, 42.0]
+
+end_effector: ["ankle_pitch_link_l", "ankle_pitch_link_r"]
+
+contact_offset: 
+    LeftToe:  [0.025, 0.055, 0, 1]
+    LeftHeel: [0.025, -0.0385, 0, 1] 
+    RightToe: [0.025, 0.055, 0, 1]
+    RightHeel: [0.025, -0.0385, 0, 1]
 
 qcmd_gain:
     kp: [ 700, 700, 700, 
