@@ -4,6 +4,8 @@
  * @author: Jun Young Kim
  */
 
+#pragma once
+
 #include <iostream>
 #include <Eigen/Dense>
 #include <vector>

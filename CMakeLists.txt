@@ -74,7 +74,7 @@ set(KinDynSRC
 set(WBC_SRC
     ${CMAKE_SOURCE_DIR}/src/WBC/wbc_base.cpp
     ${CMAKE_SOURCE_DIR}/src/WBC/weighted_wbc.cpp
-    ${CMAKE_SOURCE_DIR}/src/WBC/wbic.cpp
+    # ${CMAKE_SOURCE_DIR}/src/WBC/wbic.cpp
     ${CMAKE_SOURCE_DIR}/src/WBC/hierarchical_wbc.cpp
 )
 # Add executable target
@@ -111,10 +111,12 @@ if(BUILD_TESTING)
     add_executable(tests 
         tests/test_main.cpp
         tests/test_pino.cpp
+        tests/test_wbc.cpp
         ${KinDynSRC}
         ${WBC_SRC}
     )
     target_link_libraries(tests 
         GTest::gtest
+        qpOASES
     )
 endif()

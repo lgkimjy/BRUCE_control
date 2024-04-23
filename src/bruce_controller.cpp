@@ -64,7 +64,7 @@ BRUCEController::~BRUCEController()
 void BRUCEController::initializeSystem()
 {
     bruce.loadRobotModel();
-    wbc = std::make_shared<WeightedWBC>();
+    // wbc = std::make_shared<WeightedWBC>();
 }
 
 void BRUCEController::readConfig()
@@ -211,8 +211,6 @@ void BRUCEController::computeEEKinematics()
         // Jr_EE[i] = J.bottomRows(3);
         Jp_EE[i] = bruce.R_B_ * (bruce.data_.oMf[link_number].rotation()) * J.topRows(3);
         Jr_EE[i] = bruce.R_B_ * (bruce.data_.oMf[link_number].rotation()) * J.bottomRows(3);
-        std::cout << "Jp_EE["<<i<<"]" << std::endl << Jp_EE[i] << std::endl;
-        std::cout << "Jp_EE["<<i<<"]" << std::endl << Jr_EE[i] << std::endl;
         // Rwb * (data_->oMf[link_number].rotation()) * J.topRows(3);
         // Rwb * (data_->oMf[link_number].rotation()) * J.bottomRows(3);
         Jdotp_EE[i] = bruce.R_B_ * (bruce.data_.oMf[link_number].rotation()) * Jdot.topRows(3);
@@ -274,13 +272,14 @@ void BRUCEController::updateControlAlgorithm()
         JointPlanner2();
         // WBC starts here
         Eigen::VectorXd decision_var_tmp;
-        decision_var_tmp = wbc->update();
+        // decision_var_tmp = wbc->update(bruce);
 
         /*  segment decision_var_tmp */ 
         // qddot_cmd = decision_var_tmp.segment<ACTIVE_DOF>(0);
         // grf_des = decision_var_tmp.segment<DOF3>(ACTIVE_DOF);
         // torq_ff = bruce.computeInverseDynamics(xi_quat_cmd, xidot_cmd, xiddot_cmd);
         computeJointLevelController(JOINT_PD);
+		std::cout << std::endl;
     }
 }
 
