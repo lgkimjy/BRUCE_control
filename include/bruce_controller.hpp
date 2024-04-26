@@ -4,6 +4,8 @@
  * @author: Jun Young Kim
  */
 
+#pragma once
+
 #include <Eigen/Dense>
 #include <iostream>
 #include <cmath>
@@ -15,6 +17,15 @@
 #include "Trajectory/JointTrajectory.h"
 // #include "WBC/wbc_base.hpp"
 #include "WBC/weighted_wbc.hpp"
+#include "WBC/wbic.hpp"
+
+// Gait State
+typedef enum{
+  SINGLE_STANCE     = 0X00, // single stance
+  RIGHT_CONTACT     = 0X01, // right leg contact (double: 1)
+  LEFT_CONTACT      = 0X02, // left leg contact (double: 2)
+  DOUBLE_STANCE     = 0X03, // both wheel-leg contact
+}stateMachineTypeDef;
 
 typedef enum{
   JOINT_PD			= 0X00, // Joint PD
@@ -31,7 +42,11 @@ public:
     BRUCEController();
     ~BRUCEController();
 
+    stateMachineTypeDef stateMachine;
+    
     Robot bruce;
+    // WeightedWBC wbc;
+    WBIC wbic;
 
     double sim_time;
     int    tmp = 0;
@@ -71,8 +86,6 @@ public:
     std::vector<Eigen::Matrix<double, DOF3, TOTAL_DOF>>	    Jdotr_contact;	//	Time derivative of Jr_contact
 
 	CP2P_Traj<ACTIVE_DOF, sysReal> 			Joint_Traj;
-
-    std::shared_ptr<wbcBase> wbc;
 
 public:
     // functions

@@ -5,6 +5,7 @@
  */
 
 #include "bruce_controller.hpp"
+// #include "WBC/wbiic.hpp"
 
 BRUCEController::BRUCEController() :count_sim(0), count_ctrl(0)
 {
@@ -114,8 +115,8 @@ void BRUCEController::readConfig()
 
 void BRUCEController::control(mjModel* model, mjData* data)
 {
-    compareModelComputation(model, data, count_sim);
-
+    // compareModelComputation(model, data, count_sim);
+	stateMachine = DOUBLE_STANCE;
 	if (count_sim % CONTROL_RATE == 0) 
     {
         getMuJoCoFeedback(data);            // get feedback from mujoco about the BRUCE, compute base on .xml model
@@ -240,7 +241,7 @@ void BRUCEController::JointPlanner()
 {
 	if(Joint_Traj.is_moving_ == false)
 	{
-		Joint_Traj.setTargetPosition(bruce.q_, qpos_ref, 2.0, 1 / 1000.0, QUINTIC);
+		Joint_Traj.setTargetPosition(bruce.q_, qpos_ref, 1.0, 1 / 1000.0, QUINTIC);
 	}
 	Joint_Traj.computeTraj(qpos_d, qvel_d, qacc_d);
 }
@@ -251,7 +252,7 @@ void BRUCEController::JointPlanner2()
 	{
         qpos_ref(10) = D2R(30 * pow(-1, tmp));
         qpos_ref(13) = D2R(30 * pow(-1, tmp));
-		Joint_Traj.setTargetPosition(bruce.q_, qpos_ref, 2.0, 1 / 1000.0, QUINTIC);
+		Joint_Traj.setTargetPosition(bruce.q_, qpos_ref, 1.0, 1 / 1000.0, QUINTIC);
         tmp += 1;
 	}
 	Joint_Traj.computeTraj(qpos_d, qvel_d, qacc_d);
@@ -263,7 +264,7 @@ void BRUCEController::updateControlAlgorithm()
         // torque ON at initial joint poisition
         computeJointLevelController(JOINT_PD);
     }
-    else if(sim_time < 3.0) {
+    else if(sim_time < 2.0) {
         // squat motion or initial pose motion based on Joint PD control
         JointPlanner();
         computeJointLevelController(JOINT_PD);
@@ -271,8 +272,11 @@ void BRUCEController::updateControlAlgorithm()
     else {
         JointPlanner2();
         // WBC starts here
+        // Eigen::VectorXd decision_var_tmp;
+        // decision_var_tmp = wbc.update(bruce, *this);
+
         Eigen::VectorXd decision_var_tmp;
-        // decision_var_tmp = wbc->update(bruce);
+        decision_var_tmp = wbic.update(bruce, *this, decision_var_tmp, decision_var_tmp);
 
         /*  segment decision_var_tmp */ 
         // qddot_cmd = decision_var_tmp.segment<ACTIVE_DOF>(0);
@@ -288,7 +292,7 @@ void BRUCEController::computeJointLevelController(controllerTypeDef ctrlType)
     switch (ctrlType)
     {
     case JOINT_PD:
-        joint_torq = Kp_q * (qpos_d - bruce.q_) + Kd_q * (qvel_d - bruce.qdot_);
+        joint_torq = qacc_d + Kp_q * (qpos_d - bruce.q_) + Kd_q * (qvel_d - bruce.qdot_);
         break;
     case TORQ:
         joint_torq = torq_ff;

@@ -74,7 +74,7 @@ set(KinDynSRC
 set(WBC_SRC
     ${CMAKE_SOURCE_DIR}/src/WBC/wbc_base.cpp
     ${CMAKE_SOURCE_DIR}/src/WBC/weighted_wbc.cpp
-    # ${CMAKE_SOURCE_DIR}/src/WBC/wbic.cpp
+    ${CMAKE_SOURCE_DIR}/src/WBC/wbic.cpp
     ${CMAKE_SOURCE_DIR}/src/WBC/hierarchical_wbc.cpp
 )
 # Add executable target
@@ -108,15 +108,24 @@ target_compile_options(bruce_controller PUBLIC ${MUJOCO_SIMULATE_COMPILE_OPTIONS
 if(BUILD_TESTING)
     find_package(GTest CONFIG REQUIRED) # brew install googletest (macOS)
     include(GoogleTest)
-    add_executable(tests 
+    add_executable(tests
         tests/test_main.cpp
         tests/test_pino.cpp
         tests/test_wbc.cpp
+        src/bruce_controller.cpp
         ${KinDynSRC}
         ${WBC_SRC}
     )
     target_link_libraries(tests 
         GTest::gtest
+        
+        Eigen3::Eigen
+        yaml-cpp
+        libsimulate
+        mujoco::mujoco
+        glfw
+        Threads::Threads
+        pinocchio::pinocchio
         qpOASES
     )
 endif()

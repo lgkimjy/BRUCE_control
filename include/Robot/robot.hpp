@@ -37,8 +37,8 @@ public:
 
     pinocchio::Model            model_;
     pinocchio::Data             data_;
-    double                      nv_;
-    double                      nq_;
+    int                         nv_;
+    int                         nq_;
     double                      gravity_;
     std::vector<std::string>    jnames_;
     double                      mass_;
@@ -98,6 +98,9 @@ public:
 
 	Eigen::Matrix<double, DOF6, TOTAL_DOF>			A_CoM_;		            //	Centroidal momentum matrix (CMM)
 	Eigen::Matrix<double, DOF6, TOTAL_DOF>			Adot_CoM_;	            //	Time derivative of CMM
+
+    // temporal values
+    Eigen::MatrixXd 	M_mat_q; // should be moved to controller
 
 public:
     void loadRobotModel();

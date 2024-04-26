@@ -1,22 +1,23 @@
+#pragma once
+
 #include "WBC/wbc_base.hpp"
 
 #include <qpOASES.hpp>
 
+class BRUCEController; // Forward declaration
+
 class WBIC : public wbcBase
 {
 private:
-    double swingLegWeight_;
-    double baseAccelWeight_;
-    double contactForceWeight_;
 
 public:
-    using wbcBase::wbcBase;
-    WBIC();
-    ~WBIC() {};
+    // using wbcBase::wbcBase;
+    WBIC() {std::cout<<"WBIC Constructor"<<std::endl;}; 
+    ~WBIC() {std::cout<<"WBIC Destructor"<<std::endl;};
 
-    Eigen::VectorXd update(Eigen::VectorXd qcmd, Eigen::VectorXd rho);
+    Eigen::VectorXd update(Robot &robot, BRUCEController& controller, Eigen::VectorXd qcmd, Eigen::VectorXd rho);
 
 protected:
-    virtual Task formulateConstraints();
-    virtual Task formulateWeightedTask();
+    virtual Task formulateConstraints(Eigen::VectorXd qcmd, Eigen::VectorXd rho);
+    virtual Task formulateRelaxationTask();
 };

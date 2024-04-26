@@ -1,17 +1,19 @@
 #include "WBC/wbic.hpp"
+#include "bruce_controller.hpp"
 
   // related terms, + \ddot{q}_\text{cmd} + GRFs
-Eigen::VectorXd WBIC::update(Robot robot, Eigen::VectorXd qcmd, Eigen::VectorXd rho)
+Eigen::VectorXd WBIC::update(Robot &robot, BRUCEController& controller, Eigen::VectorXd qcmd, Eigen::VectorXd rho)
 {
+    std::cout << "WBIC::update()" << std::endl;
     // Formulate Tasks and Constraints
-    wbcBase::update();
+    wbcBase::update(robot, controller);
     
-    Task constraints = formulateConstraints();
+    Task constraints = formulateConstraints(qcmd, rho);
     size_t numConstraints = constraints.b_.size() + constraints.f_.size();
 
     // Constraints (inequality, equality)
     Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> A(numConstraints, getNumDecisionVars());
-    // vector_t lbA(numConstraints), ubA(numConstraints);  // clang-format off
+    vector_t lbA(numConstraints), ubA(numConstraints);  // clang-format off
     // A << constraints.a_,
     //     constraints.d_;
 
@@ -21,9 +23,9 @@ Eigen::VectorXd WBIC::update(Robot robot, Eigen::VectorXd qcmd, Eigen::VectorXd 
     //         constraints.f_;  // clang-format on
 
     // Objective Function (Cost)
-    Task weightedTask = formulateWeightedTask();
-    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> H = weightedTask.a_.transpose() * weightedTask.a_;
-    Eigen::VectorXd g = -weightedTask.a_.transpose() * weightedTask.b_;
+    Task relaxationTask = formulateRelaxationTask();
+    Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> H = relaxationTask.a_.transpose() * relaxationTask.a_;
+    Eigen::VectorXd g = -relaxationTask.a_.transpose() * relaxationTask.b_;
 
     // Solve
     auto qpProblem = qpOASES::QProblem(getNumDecisionVars(), numConstraints);
@@ -41,19 +43,21 @@ Eigen::VectorXd WBIC::update(Robot robot, Eigen::VectorXd qcmd, Eigen::VectorXd 
     return qpSol;
 }
 
-Task WBIC::formulateConstraints()
+Task WBIC::formulateConstraints(Eigen::VectorXd qcmd, Eigen::VectorXd rho)
 {
-    // Task constraints;
-    // formulateContactTask();
-    // formulateCoMTask();
-    // formulateOrientationTask();
-    // formulateEETask();
-    // formulateJointTask();
-    return formulateFloatingBaseConstraint() + formulateFrictionConeConstraint();
+    Task relaxed_task1, relaxed_task2, relaxed_task3;
+
+    // equality constraints
+    relaxed_task1.b_ = formulateFloatingBaseConstraint().b_ + Sf_ * (robot_.M_mat_q * qcmd - Jp_contact_.transpose() * rho);
+    relaxed_task2.b_ = formulateContactConstraint().b_ + Jp_contact_ * qcmd;
+
+    // inequality constraints
+    relaxed_task3.f_ = formulateFrictionConeConstraint().f_ + rho;
+
+    return relaxed_task1 + relaxed_task2 + relaxed_task3;
 }
 
-Task WBIC::formulateWeightedTask()
+Task WBIC::formulateRelaxationTask()
 {
-    Task weightedTask;
-    return weightedTask;
+    return {};
 }
