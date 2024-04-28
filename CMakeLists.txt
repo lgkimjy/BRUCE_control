@@ -110,6 +110,7 @@ if(BUILD_TESTING)
     include(GoogleTest)
     add_executable(tests
         tests/test_main.cpp
+        tests/test_eigen.cpp
         tests/test_pino.cpp
         tests/test_wbc.cpp
         src/bruce_controller.cpp
