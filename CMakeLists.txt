@@ -119,7 +119,6 @@ if(BUILD_TESTING)
     )
     target_link_libraries(tests 
         GTest::gtest
-        
         Eigen3::Eigen
         yaml-cpp
         libsimulate

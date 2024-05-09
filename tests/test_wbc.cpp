@@ -75,12 +75,17 @@ TEST_F(TestWBC, test_EigenConcatenate)
 
     Eigen::MatrixXd Q1 = taskRes.a_.transpose() * taskRes.a_;
     Eigen::MatrixXd Q2;
-
     Q2 = taskA.a_.transpose() * taskA.a_ + taskB.a_.transpose() * taskB.a_;
-
-    // std::cout << Q1 << std::endl;
-    // std::cout << Q2 << std::endl;
-
+    // std::cout << "Q1: " << std::endl << Q1 << std::endl;
+    // std::cout << "Q2: " << std::endl << Q2 << std::endl;
     // EXPECT_EQ(Q1, Q2);
     EXPECT_TRUE((Q1-Q2).norm() < 1e-10);
+
+    Eigen::VectorXd q1 = -taskRes.a_.transpose() * taskRes.b_;
+    Eigen::VectorXd q2;
+    q2 = -taskA.a_.transpose() * taskA.b_ - taskB.a_.transpose() * taskB.b_;
+    // std::cout << "q1: " << std::endl << q1.transpose() << std::endl;
+    // std::cout << "q2: " << std::endl << q2.transpose() << std::endl;
+    // EXPECT_EQ(q1, q2);
+    EXPECT_TRUE((q1-q2).norm() < 1e-10);
 }
